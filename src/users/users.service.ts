@@ -6,6 +6,8 @@ import { v4 as uuid } from 'uuid'
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ROLES_KEY } from 'src/common/constants/constants';
+import { Role } from 'src/common/constants/enums/roles.enum';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +18,11 @@ export class UsersService {
   ) { }
 
   create(createUserDto: CreateUserDto) {
-    return this.userRepository.save({ ...createUserDto, id: uuid() });
+    const { /*username, email, password,*/ roles, ...rest } = createUserDto
+    const user = this.userRepository.create({ ...rest, id: uuid()})
+    if(roles)
+     user[ROLES_KEY] = [...roles,Role.User]
+    return this.userRepository.save(user);
   }
 
   findOneByEmail(email: string) {

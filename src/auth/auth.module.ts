@@ -4,12 +4,14 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { LocalStrategy } from './utils/local.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './utils/jwt.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 
 @Module({
@@ -40,6 +42,10 @@ import { JwtStrategy } from './utils/jwt.strategy';
       provide: 'USER_SERVICE',
       useClass: UsersService,
     },
+    // {
+    //   provide: 'APP_GUARD',
+    //   useClass: RolesGuard,
+    // },
     LocalStrategy,
     JwtStrategy
   ],

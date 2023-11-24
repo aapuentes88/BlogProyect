@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer"
-import { IsEmail, IsString, MinLength } from "class-validator"
+import { IsArray, IsEmail, IsOptional, IsString, MinLength } from "class-validator"
 
 export class RegisterDto {
 
@@ -15,4 +15,8 @@ export class RegisterDto {
     @IsString()
     @MinLength(8)
     password: string
+
+    @IsOptional()
+    @IsArray()
+    roles?: string[]
 }

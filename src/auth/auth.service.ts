@@ -10,7 +10,6 @@ export class AuthService {
     constructor(private readonly userService: UsersService, private jwtService: JwtService) { }
 
     async validateUser(username: string, password: string) {
-        console.log(`Inside validation AuthService`)
         const userDB = await this.userService.findUserByUserName(username)
 
         if (userDB) {
@@ -34,7 +33,7 @@ export class AuthService {
     }
 
     async register(register: RegisterDto) {
-        const { username, password, email } = register
+        const { username, password, email, roles } = register
         const user = await this.userService.findOneByEmail(email)
 
         if (user) {
@@ -46,7 +45,8 @@ export class AuthService {
             {
                 username,
                 email,
-                password: hashPassword(password)
+                password: hashPassword(password),
+                roles
             }
         )
     }

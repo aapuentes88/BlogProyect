@@ -1,3 +1,4 @@
+import { Role } from 'src/common/constants/enums/roles.enum';
 import { Column, Entity } from 'typeorm';
 
 @Entity()
@@ -14,7 +15,9 @@ export class User {
     @Column({nullable: false})
     password: string
 
-    @Column({default: 'user'})
-    rol: string
+    @Column({type: 'simple-array',  default: 'user' }/*{default: [Role.User]}*/)
+    roles: string[]
+    // roles: Role[]
+    
 
 }
