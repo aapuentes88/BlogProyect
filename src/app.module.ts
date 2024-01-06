@@ -3,6 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PostsController } from './posts/posts.controller';
+import { PostsService } from './posts/posts.service';
+import { ProfileModule } from './profile/profile.module';
+import { User } from './users/entities/user.entity';
+import { Profile } from './profile/entities/profile.entity';
+import { MulterModule } from '@nestjs/platform-express';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -10,6 +18,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       envFilePath: `.${process.env.NODE_ENV}.env`,
       isGlobal: true
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), // Ruta a la carpeta "uploads" relativa al directorio del módulo
+      serveRoot: '/uploads',
+    }),
+    MulterModule.register({dest: './uploads',}),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -22,6 +35,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         database: configService.get('DB_NAME_P') ?? 'testing',
         retryDelay: 3000,
         autoLoadEntities: true,
+        entities: [User, Profile],
         synchronize: true,
       })
     }),
@@ -37,8 +51,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     // }),
     UsersModule,
     AuthModule,
+    ProfileModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [PostsController],
+  providers: [PostsService],
 })
 export class AppModule { }

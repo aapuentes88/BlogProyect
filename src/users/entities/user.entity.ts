@@ -1,5 +1,5 @@
-import { Role } from 'src/common/constants/enums/roles.enum';
-import { Column, Entity } from 'typeorm';
+import { Profile } from 'src/profile/entities/profile.entity';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity()
 export class User {
@@ -19,5 +19,7 @@ export class User {
     roles: string[]
     // roles: Role[]
     
-
+    @OneToOne(() => Profile, profile => profile.user)
+    @JoinColumn() // Colocado en User
+    profile: Profile;
 }

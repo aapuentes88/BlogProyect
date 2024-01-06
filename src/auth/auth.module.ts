@@ -10,8 +10,10 @@ import { User } from 'src/users/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { ProfileModule } from 'src/profile/profile.module';
+import { Profile } from 'src/profile/entities/profile.entity';
+import { ProfileService } from 'src/profile/profile.service';
+
 
 
 @Module({
@@ -28,8 +30,9 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
         signOptions: { expiresIn: '1d' }
       })
     }),
+    TypeOrmModule.forFeature([User, Profile]),
     UsersModule,
-    TypeOrmModule.forFeature([User]),
+    ProfileModule,
     PassportModule
   ],
   controllers: [AuthController],
@@ -42,6 +45,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
       provide: 'USER_SERVICE',
       useClass: UsersService,
     },
+    ProfileService,
     // {
     //   provide: 'APP_GUARD',
     //   useClass: RolesGuard,

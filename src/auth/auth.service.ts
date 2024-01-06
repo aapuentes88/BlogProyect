@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { hashPassword, cmpPassword } from './utils/bcrypt';
+import { UpdateProfileDto } from 'src/profile/dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -39,8 +40,7 @@ export class AuthService {
         if (user) {
             throw new BadRequestException(`User ${username}  already exist`)
         }
-
-
+        
         return await this.userService.create(
             {
                 username,
@@ -58,6 +58,20 @@ export class AuthService {
                 username: user.username,
             })
         }
+    }
+
+    async findProfile(user: any){
+        const {id} = user
+        const userDB = await this.userService.findProfileByUserId(id)
+        // console.log(userDB)
+        return userDB
+    }
+
+    async updateProfile(user: any, updateProfileDto: UpdateProfileDto){
+        const {id} = user
+        const userDB = await this.userService.updateProfileByUserId(id, updateProfileDto)
+        console.log(userDB)
+        return userDB
     }
 }
 

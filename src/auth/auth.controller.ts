@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Patch, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CookieSerializeOptions, serialize } from 'cookie';
 import { Role } from 'src/common/constants/enums/roles.enum';
@@ -6,6 +6,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateProfileDto } from 'src/profile/dto/update-profile.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -36,7 +37,7 @@ export class AuthController {
         const cookieName = 'token'; // Nombre de la cookie que deseas eliminar
         res.setHeader('Set-Cookie', serialize(cookieName, token.access_token, cookieOptions)); // Establece la cookie en el cliente
         // res.status(200).send({ message: 'Inicio de sesión exitoso', user: req.user });
-        return { message: 'Inicio de sesión exitoso', user: req.user } //passthrough: true
+        return { message: 'Inicio de sesión exitoso', user: req.user, token: token.access_token } //passthrough: true
     }
 
     @Get('logout')
@@ -55,6 +56,18 @@ export class AuthController {
         // return { message: 'Sesión cerrada exitosamente', user: req.user }
     }
 
+    
+    @Get('profile')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)    
+    async findProfile(@Request() req) {
+        return this.authService.findProfile(req.user)
+    }
+
+    @Patch('profile')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)    
+    async updateProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto) {
+        return this.authService.updateProfile(req.user, updateProfileDto)
+    }
     //ruta protegida por rol user
     @Get('user')
     @Roles(Role.User)
@@ -71,4 +84,5 @@ export class AuthController {
     async userAdmin(@Request() req) {
         return req.user
     }
+
 }
