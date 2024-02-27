@@ -26,12 +26,10 @@ export class UsersService {
     const user = this.userRepository.create({ ...rest, id: uuid()})
     if(roles)
      user[ROLES_KEY] = [...roles,Role.User]
-
     
     const profile = await this.profileService.create({})
     // profile.user = user
     user.profile = profile
-
 
     const usersaved = this.userRepository.save(user)
 
@@ -50,12 +48,34 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: string) {
+    return this.userRepository.findOneBy({ id })
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    console.log('update user whit post')
+    // Obtener el usuario de la base de datos
+  let user = await this.userRepository.findOne({where: { id: id },relations: ['posts']});
+
+  // Aplicar las actualizaciones del DTO al usuario
+  console.log(user)
+  console.log('-----------------------------')
+  let nPosts =   updateUserDto.posts ? updateUserDto.posts :  []
+  user.posts ? user.posts = [...nPosts, ...user.posts] : user.posts = nPosts
+
+  const {posts, ...userWithoutPost} = updateUserDto  
+  user = {...user, ...userWithoutPost}
+  console.log(user)
+  // if (updateUserDto.posts) {
+  //   user.posts = [...user.posts, ...updateUserDto.posts];
+  // }
+
+  // Guardar el usuario actualizado en la base de datos
+  try {
+    user = await this.userRepository.save(user);
+  } catch (error) {
+    throw new Error(`Error updating user: ${error.message}`);
+  }
   }
 
   remove(id: number) {
@@ -98,10 +118,14 @@ export class UsersService {
   async profilePhotoUrl(id: string){
     const profile = await this.findProfileByUserId(id)
 
-    //Verifica si el directorio de la foto existe, si no, lanza excepcion
+    if(profile.profilePhoto.includes('googleusercontent'))
+         return {photoUrl: profile.profilePhoto}
+    
+    //Verifica si el directorio de la foto existe, si no, lanza excepcion sino es de google
     if (!fs.existsSync(profile.profilePhoto)) {
       throw new NotFoundException("No existe la ruta de la foto");
     }
+    
     //Genera la url
     const photoUrl = `http://localhost:3001/${profile.profilePhoto}`
     return {photoUrl}

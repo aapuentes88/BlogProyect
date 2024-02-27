@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    // "module": "ESNext",
+    // "esModuleInterop": true,
+    // "allowJs": true,
+
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

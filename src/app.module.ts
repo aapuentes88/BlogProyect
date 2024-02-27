@@ -11,6 +11,8 @@ import { Profile } from './profile/entities/profile.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { Post } from './posts/entities/post.entity';
+import { PostModule } from './posts/post.module';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { join } from 'path';
         database: configService.get('DB_NAME_P') ?? 'testing',
         retryDelay: 3000,
         autoLoadEntities: true,
-        entities: [User, Profile],
+        entities: [User, Profile, Post],
         synchronize: true,
       })
     }),
@@ -52,8 +54,9 @@ import { join } from 'path';
     UsersModule,
     AuthModule,
     ProfileModule,
+    PostModule
   ],
-  controllers: [PostsController],
-  providers: [PostsService],
+  controllers: [/*PostsController*/],
+  providers: [/*PostsService*/],
 })
 export class AppModule { }

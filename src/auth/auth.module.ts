@@ -13,8 +13,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ProfileModule } from 'src/profile/profile.module';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
-
-
+import { GoogleStrategy } from './strategies/google.strategy';
+import { SessionSerializer } from './utils/passport.serializer';
 
 @Module({
   imports: [
@@ -33,7 +33,9 @@ import { ProfileService } from 'src/profile/profile.service';
     TypeOrmModule.forFeature([User, Profile]),
     UsersModule,
     ProfileModule,
-    PassportModule
+    // PassportModule//Default
+    // PassportModule.register({ session: true })//Usando Sessiones
+    PassportModule.register({ session: false })
   ],
   controllers: [AuthController],
   providers: [
@@ -51,7 +53,16 @@ import { ProfileService } from 'src/profile/profile.service';
     //   useClass: RolesGuard,
     // },
     LocalStrategy,
-    JwtStrategy
+    JwtStrategy,
+    GoogleStrategy,
+    SessionSerializer
   ],
+  exports: [
+    GoogleStrategy
+  ]
 })
-export class AuthModule { }
+export class AuthModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(PassportSessionMiddleware).forRoutes('auth/google/redirect');
+  // }
+}

@@ -1,5 +1,6 @@
+import { Post } from 'src/posts/entities/post.entity';
 import { Profile } from 'src/profile/entities/profile.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
 @Entity()
 export class User {
@@ -12,7 +13,7 @@ export class User {
     @Column({unique: true, nullable: false})
     email: string
 
-    @Column({nullable: false})
+    @Column({nullable: true})
     password: string
 
     @Column({type: 'simple-array',  default: 'user' }/*{default: [Role.User]}*/)
@@ -22,4 +23,7 @@ export class User {
     @OneToOne(() => Profile, profile => profile.user)
     @JoinColumn() // Colocado en User
     profile: Profile;
+
+    @OneToMany(() => Post, (post) => post.user)
+    posts: Post[]
 }

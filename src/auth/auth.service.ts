@@ -4,6 +4,7 @@ import { UsersService } from 'src/users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { hashPassword, cmpPassword } from './utils/bcrypt';
 import { UpdateProfileDto } from 'src/profile/dto/update-profile.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +32,17 @@ export class AuthService {
         //return null
         throw new UnauthorizedException(`User is wrong`)
 
+    }
+
+    async validateGoogleUser(infoGoogleUser: Pick<CreateUserDto, 'username' | 'email'>, infoToProfile: UpdateProfileDto) {
+        let userDB = await this.userService.findOneByEmail(infoGoogleUser.email)
+
+        if (!userDB) {
+            userDB = await this.userService.create(infoGoogleUser)
+            await this.userService.updateProfileByUserId(userDB.id, infoToProfile)
+        }         
+
+        return userDB;
     }
 
     async register(register: RegisterDto) {
